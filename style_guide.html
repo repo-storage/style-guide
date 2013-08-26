@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ config.site_title }} - Site Style Guide ( {{ config.theme }} )</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Bootstrap -->
+
+        <link rel="stylesheet" href="{{ base_url}}/assets/bootstrap/css/bootstrap.min.css" type="text/css" />
+        <link rel="stylesheet" href="{{ theme_url }}/style.css" type="text/css" />
+        <link rel="stylesheet" href="{{ theme_url }}/stylesheet.css" type="text/css" />
+        <link rel="stylesheet" href="{{ theme_url }}/fonts/open-sans/stylesheet.css" type="text/css" />
+
+    </head>
+    <body>
+        <header>
+            <nav id="top-nav" class="navbar navbar-fixed-top">
+                <div class="container">
+                    <ul class="nav navbar-nav pull-right">
+                        {% for page in pages if page.date is empty %}
+                        <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{{ base_url }}" class="navbar-brand sub-headlines">
+                        {{ config.site_title }}
+                    </a>
+                    <!-- container -->
+                </div>
+
+            </nav>
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-lg-12">
+                        {{ sg_base.address }}
+                    </div>
+                </div>
+            </div>
+            <script src="{{ theme_url }}/js/respond/respond.min.js"></script>
+            <script src="{{ theme_url }}/js/fixie_min.js" ></script>
+    </body>
+</html>
