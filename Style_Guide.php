@@ -4,12 +4,14 @@
  * TODO Example hooks for a Pico plugin
  *
  * @package Pico
- * @subpackage TODO
- * @since version TODO
- * @author TODO Shawn Sandy
+ * @subpackage Style Guide
+ * @since version Ver 0.1
+ * @author Shawn Sandy
  * @link TODO http://www.shawnsandy.com
  * @license http://opensource.org/licenses/MIT
  */
+
+
 class Style_Guide {
 
     private $plugin_path,
@@ -36,10 +38,10 @@ class Style_Guide {
         $this->theme_dir = $twig_vars['theme_dir'];
 
         $this->base_dir = $twig_vars['theme_dir'].'/style-guide/markup/base/';
-        $this->pattern_dir = $twig_vars['theme_dir'].'/style-guide/markup/patterns';
+        $this->pattern_dir = $twig_vars['theme_dir'].'/style-guide/markup/patterns/';
 
         $base_url = '/markup/base/';
-        $pattern_url = '/markup/patterns';
+        $pattern_url = '/markup/patterns/';
 
         // get the sg base files
 
@@ -71,14 +73,11 @@ class Style_Guide {
 
         //override pico default pages
        $system_path = $this->theme_dir.'/style-guide';
-
         if ($this->stylizer):
             header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK'); // Override 404 header
             $loader = new Twig_Loader_Filesystem($system_path);
             $style_guide = new Twig_Environment($loader, $twig_vars);
-
             $output = $style_guide->render('style_guide.html', $twig_vars);
-
             echo $output;
             exit;
         endif;
@@ -89,22 +88,6 @@ class Style_Guide {
     }
 
      /**
-     * Processes any hooks and runs them
-     *
-     * @param string $hook_id the ID of the hook
-     * @param array $args optional arguments
-     */
-    private function run_hooks($hook_id, $args = array()) {
-        if (!empty($this->plugins)) {
-            foreach ($this->plugins as $plugin) {
-                if (is_callable(array($plugin, $hook_id))) {
-                    call_user_func_array(array($plugin, $hook_id), $args);
-                }
-            }
-        }
-    }
-
-        /**
      * Helper function to recusively get all files in a directory
      *
      * @param string $directory start directory
