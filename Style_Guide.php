@@ -1,5 +1,4 @@
 <?php
-
 /**
  * TODO Example hooks for a Pico plugin
  *
@@ -134,4 +133,3 @@ class Style_Guide {
     }
 
 }
-?>
