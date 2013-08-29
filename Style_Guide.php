@@ -10,8 +10,6 @@
  * @link TODO http://www.shawnsandy.com
  * @license http://opensource.org/licenses/MIT
  */
-
-
 class Style_Guide {
 
     private $plugin_path,
@@ -32,13 +30,14 @@ class Style_Guide {
     }
 
     public function before_render(&$twig_vars, &$twig) {
-
-         $this->theme_url = $twig_vars['theme_url'];
+        //var_dump($twig_vars);
+        $this->theme_url = $twig_vars['theme_url'];
 
         $this->theme_dir = $twig_vars['theme_dir'];
 
-        $this->base_dir = $twig_vars['theme_dir'].'/style-guide/markup/base/';
-        $this->pattern_dir = $twig_vars['theme_dir'].'/style-guide/markup/patterns/';
+        $this->base_dir = $twig_vars['theme_dir'] . '/style-guide/markup/base/';
+
+        $this->pattern_dir = $twig_vars['theme_dir'] . '/style-guide/markup/patterns/';
 
         $base_url = '/markup/base/';
         $pattern_url = '/markup/patterns/';
@@ -46,33 +45,38 @@ class Style_Guide {
         // get the sg base files
 
         $base_styles = $this->sg_base();
-        if(!empty($base_styles)):
-        $twig_vars['_base'] = $base_styles;
-        foreach ($twig_vars['_base'] as $key) {
-            $name = basename($key, '.html');
-            $base_array[$name] = $base_url.$key;
-        }
-        //var_dump($base_array);
-        $twig_vars['sg_base'] = $base_array;
+        if (!empty($base_styles)):
+            $twig_vars['_base'] = $base_styles;
+            foreach ($twig_vars['_base'] as $key) {
+                $name = basename($key, '.html');
+                $base_array[$name] = $base_url . $key;
+                $source[$name] = $this->get_source($name);
+            }
+            //var_dump($base_array);
+            $twig_vars['base'] = $base_array;
+            $twig_vars['sg_source'] = $source;
         endif;
 
 
         //get sg user patterns files
         $patterns = $this->sg_patterns();
         //var_dump($patterns);
-        if(!empty($patterns)):
-        $twig_vars['_patterns'] = $patterns;
-        foreach ($twig_vars['_patterns'] as $pattern_key) {
-            $pattern_name = basename($pattern_key, '.html');
-            $pattern_array[$pattern_name] = $pattern_url.$pattern_key ;
-        }
-        $twig_vars['sg_patterns'] = $pattern_array;
+        if (!empty($patterns)):
+            $twig_vars['_patterns'] = $patterns;
+            foreach ($twig_vars['_patterns'] as $pattern_key) {
+                $pattern_name = preg_replace('/-/', '_', basename($pattern_key, '.html'));
+                $pattern_array[$pattern_name] = $pattern_url . $pattern_key;
+                $pattern_source[$pattern_name] = $this->get_source($pattern_name);
+            }
+            $twig_vars['pattern'] = $pattern_array;
+            $twig_vars['pattern_source'] = $pattern_source ;
+
         //var_dump($pattern_array);
         endif;
 
 
-        //override pico default pages
-       $system_path = $this->theme_dir.'/style-guide';
+        //override pico default html template
+        $system_path = $this->theme_dir . '/style-guide';
         if ($this->stylizer):
             header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK'); // Override 404 header
             $loader = new Twig_Loader_Filesystem($system_path);
@@ -87,7 +91,7 @@ class Style_Guide {
 
     }
 
-     /**
+    /**
      * Helper function to recusively get all files in a directory
      *
      * @param string $directory start directory
@@ -114,18 +118,20 @@ class Style_Guide {
         return $array_items;
     }
 
-
-    private function sg_base(){
+    private function sg_base() {
         $files = $this->get_files($this->base_dir, '.html');
         return $files;
     }
 
-    private function sg_patterns(){
+    private function sg_patterns() {
         $files = $this->get_files($this->pattern_dir, '.html');
         return $files;
     }
 
+    public function get_source($name,$title ='View Source') {
+       $code = $this->theme_url."/style-guide/index.php#sg-{$name}";
+       return $code;
+    }
 
 }
-
 ?>
