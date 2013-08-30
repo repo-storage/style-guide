@@ -18,7 +18,7 @@ class Style_Guide {
             $theme_dir,
             $theme_url,
             $base_dir,
-            $pattern_dir;
+            $content = 'index';
 
     public function __construct() {
         $this->plugin_path = dirname(__FILE__);
@@ -31,10 +31,10 @@ class Style_Guide {
             //get the url paths
             $paths = explode("/", $url);
             if (count($paths) > 1):
+                $this->content = $paths[1].'.html';
             else:
-                $this->stylizer = 'style_guide.html';
+                $this->stylizer = 'style_guide';
             endif;
-
         endif;
     }
 
@@ -50,6 +50,9 @@ class Style_Guide {
 
         $base_url = '/markup/base/';
         $pattern_url = '/markup/patterns/';
+
+        //page content
+        $twig_vars['sg_content'] = 'style_'.$this->content.'.html';
 
         // get the sg base files
 
@@ -90,7 +93,7 @@ class Style_Guide {
             header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK'); // Override 404 header
             $loader = new Twig_Loader_Filesystem($system_path);
             $style_guide = new Twig_Environment($loader, $twig_vars);
-            $output = $style_guide->render($this->stylizer, $twig_vars);
+            $output = $style_guide->render('style_guide.html', $twig_vars);
             echo $output;
             exit;
         endif;
