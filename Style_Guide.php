@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TODO Example hooks for a Pico plugin
  *
@@ -9,10 +10,11 @@
  * @link TODO http://www.shawnsandy.com
  * @license http://opensource.org/licenses/MIT
  */
+
 class Style_Guide {
 
     private $plugin_path,
-            $stylizer = false,
+            $stylizer = null,
             $theme_dir,
             $theme_url,
             $base_dir,
@@ -24,8 +26,16 @@ class Style_Guide {
 
     public function request_url(&$url) {
         //var_dump($url);
-        if ($url == 'style_guide')
-            $this->stylizer = true;
+        //check see if style_guide is in the $url
+        if (preg_match("/style_guide/i", $url)):
+            //get the url paths
+            $paths = explode("/", $url);
+            if (count($paths) > 1):
+            else:
+                $this->stylizer = 'style_guide.html';
+            endif;
+
+        endif;
     }
 
     public function before_render(&$twig_vars, &$twig) {
@@ -47,9 +57,9 @@ class Style_Guide {
         if (!empty($base_styles)):
             $twig_vars['_base'] = $base_styles;
             foreach ($twig_vars['_base'] as $key) {
-                $name = basename($key, '.html');
+                $name = preg_replace('/-/','_' ,basename($key, '.html'));
                 $base_array[$name] = $base_url . $key;
-                $source[$name] = $this->get_source($name);
+                $source[$name] = $this->get_source($this->base_dir.$key);
             }
             //var_dump($base_array);
             $twig_vars['base'] = $base_array;
@@ -65,10 +75,10 @@ class Style_Guide {
             foreach ($twig_vars['_patterns'] as $pattern_key) {
                 $pattern_name = preg_replace('/-/', '_', basename($pattern_key, '.html'));
                 $pattern_array[$pattern_name] = $pattern_url . $pattern_key;
-                $pattern_source[$pattern_name] = $this->get_source($pattern_name);
+                $pattern_source[$pattern_name] = $this->get_source($this->pattern_dir.$pattern_key);
             }
             $twig_vars['pattern'] = $pattern_array;
-            $twig_vars['pattern_source'] = $pattern_source ;
+            $twig_vars['pattern_source'] = $pattern_source;
 
         //var_dump($pattern_array);
         endif;
@@ -80,7 +90,7 @@ class Style_Guide {
             header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK'); // Override 404 header
             $loader = new Twig_Loader_Filesystem($system_path);
             $style_guide = new Twig_Environment($loader, $twig_vars);
-            $output = $style_guide->render('style_guide.html', $twig_vars);
+            $output = $style_guide->render($this->stylizer, $twig_vars);
             echo $output;
             exit;
         endif;
@@ -127,9 +137,13 @@ class Style_Guide {
         return $files;
     }
 
-    public function get_source($name,$title ='View Source') {
-       $code = $this->theme_url."/style-guide/index.php#sg-{$name}";
-       return $code;
+    public function get_source($file, $title = 'View Source') {
+        //$code = $this->theme_url . "/style-guide/index.php#sg-{$name}";
+        if(!file_exists($file)) return '';
+        $code = file_get_contents($file);
+        return $code;
     }
+
+
 
 }
