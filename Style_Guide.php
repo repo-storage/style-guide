@@ -113,6 +113,7 @@ class Style_Guide {
      */
     private function get_files($directory, $ext = '') {
         $array_items = array();
+        if(!is_dir($directory)) return false;
         if ($handle = opendir($directory)) {
             while (false !== ($file = readdir($handle))) {
                 if ($file != "." && $file != "..") {
